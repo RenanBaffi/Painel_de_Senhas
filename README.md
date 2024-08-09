@@ -25,3 +25,5 @@ Bancos e instituições financeiras
 Repartições públicas
 Qualquer lugar que precise de um sistema de senhas organizado e sincronizado.
 
+
+![image](https://github.com/user-attachments/assets/514ec248-ae1a-4677-9a00-02810baf6b51)
