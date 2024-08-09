@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Senhas</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        header {
+            font-size: 50px;
+            height: 150px;
+            background-color: orangered;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center; 
+        }
+
+        main {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: row;
+            gap: 30px;
+        }
+
+        .painel {
+            padding: 30px;
+            border: 2px solid white;
+            border-radius: 40px;
+            background-color: rgb(94, 88, 88);
+            color: white;
+            font-size: 100px;
+            text-align: center;
+            min-width: 700px;
+        }
+
+        .painel h2 {
+            font-size: 60px;
+        }
+
+        .painel #senha {
+            border: 1px solid white;
+            border-radius: 20px;
+            padding: 20px;
+            background-color: black;
+        }
+
+        .historico ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .historico li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            background-color: black;
+            margin-bottom: 5px;
+            color: white;
+            font-size: 50px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Painel de Senhas</h1>
+    </header>
+    <main>
+        <div class="painel">
+            <h2>Senha</h2>
+            <h2 id="senha" aria-live="polite">N000</h2>
+        </div>
+        <div class="painel historico">
+            <h2>Senhas já chamadas</h2>
+            <ul id="lista-senhas"></ul>
+        </div>
+    </main>
+    
+    <script>
+        const vSenha = document.querySelector("#senha");
+        const listaSenhas = document.querySelector("#lista-senhas");
+        let senhaNormal = parseInt(localStorage.getItem('senhaNormal')) || 0;
+        let senhaPreferencial = parseInt(localStorage.getItem('senhaPreferencial')) || 0;
+        let senhaRP = parseInt(localStorage.getItem('senhaRP')) || 0;
+        let ultSenha = localStorage.getItem('ultSenha') || 'N';
+        let historicoSenhas = JSON.parse(localStorage.getItem('historicoSenhas')) || [];
+        let audio = new Audio('senha.mp3');
+
+        mostrarSenha();
+        atualizarHistorico();
+
+        window.addEventListener('keydown', function(e) {
+            if (e.key.toLowerCase() === 'n') {
+                senhaNormal++;
+                ultSenha = 'N';
+                adicionarAoHistorico('N' + senhaNormal.toLocaleString('pt-br', {minimumIntegerDigits: 3}));
+                audio.play();
+            } else if (e.key.toLowerCase() === 'p') {
+                senhaPreferencial++;
+                ultSenha = 'P';
+                adicionarAoHistorico('P' + senhaPreferencial.toLocaleString('pt-br', {minimumIntegerDigits: 3}));
+                audio.play();
+            } else if (e.key.toLowerCase() === 't') {
+                senhaRP++;
+                ultSenha = 'R';
+                adicionarAoHistorico('R' + senhaRP.toLocaleString('pt-br', {minimumIntegerDigits: 3}));
+                audio.play();
+            } else if (e.key.toLowerCase() === 'r') {
+                if (confirm('Deseja realmente reiniciar tudo?')) {
+                    ultSenha = 'N';
+                    senhaNormal = 0;
+                    senhaPreferencial = 0;
+                    senhaRP = 0;
+                    historicoSenhas = [];
+                }
+            } else if (e.key.toLowerCase() === 'a') {
+                audio.play();
+            }
+
+            salvarEstado();
+            mostrarSenha();
+            atualizarHistorico();
+        });
+
+        function adicionarAoHistorico(senha) {
+            historicoSenhas.push(senha);
+            if (historicoSenhas.length > 3) historicoSenhas.shift();
+        }
+
+        function salvarEstado() {
+            localStorage.setItem('senhaNormal', senhaNormal);
+            localStorage.setItem('senhaPreferencial', senhaPreferencial);
+            localStorage.setItem('senhaRP', senhaRP);
+            localStorage.setItem('ultSenha', ultSenha);
+            localStorage.setItem('historicoSenhas', JSON.stringify(historicoSenhas));
+        }
+
+        function mostrarSenha() {
+            let senhaAtual;
+            if (ultSenha === 'N') {
+                senhaAtual = 'N' + senhaNormal.toLocaleString('pt-br', {minimumIntegerDigits: 3});
+            } else if (ultSenha === 'P') {
+                senhaAtual = 'P' + senhaPreferencial.toLocaleString('pt-br', {minimumIntegerDigits: 3});
+            } else if (ultSenha === 'R') {
+                senhaAtual = 'R' + senhaRP.toLocaleString('pt-br', {minimumIntegerDigits: 3});
+            }
+            vSenha.textContent = senhaAtual;
+        }
+
+        function atualizarHistorico() {
+            listaSenhas.innerHTML = '';
+            historicoSenhas.slice(-3).forEach(senha => {
+                const li = document.createElement('li');
+                li.textContent = senha;
+                listaSenhas.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
