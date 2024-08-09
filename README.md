@@ -1,4 +1,4 @@
-<h1>Painel-de-Senhas</h1>
+<h1>Painel de Senhas</h1>
 
 Este sistema foi desenvolvido para gerenciar senhas de atendimento de forma eficiente e sincronizada em vários dispositivos simultaneamente. Ideal para ambientes de alto tráfego, como clínicas, bancos e repartições públicas.
 
